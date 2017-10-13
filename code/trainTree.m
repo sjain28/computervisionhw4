@@ -22,33 +22,74 @@ tau.L = [];
 tau.R = [];
 tau.p = [];
 
-%% Your code here
 if OkToSplit(S, depth)
     [Ltemp, Rtemp, tau.d, tau.t] = findSplit(S);
-    tau.L = trainTree(L, depth+1, random, dMax, sMin);
-    tau.R = trainTree(R, depth+1, random, dMax, sMin);
+    tau.L = trainTree(Ltemp, depth+1, random, dMax, sMin);
+    tau.R = trainTree(Rtemp, depth+1, random, dMax, sMin);
 else
     tau.p = distribution(S);
 end
 
 %%
     function answer = OkToSplit(S, depth)
-        answer = impurity(S) > 0 & depth < dMax & numel(S) > sMin;
+        answer = impurity(S) > 0 & depth < dMax & numel(S.X(:,1)) > sMin;
     end
 %%
     function [LOpt, ROpt, dOpt, tOpt] = findSplit(S)
         if random
-            [LOpt, ROpt, dOpt, tOpt] = findSplitR(s);
+            [LOpt, ROpt, dOpt, tOpt] = findSplitR(S);
         else
-        Delta = -1;
-        Delta = fix(Delta, S, L, R);
+        DeltaOpt = -1;
+        im = impurity(S);
+        featureSize = double(size(S.X));
+        numDims = featureSize(2);
+        
+        %TODO: Deal with case where splitting is impossible but OkToSplit
+        %returns true
+        for i = 1:numDims
+            dimValues = S.X(:,i);
+            thresholds = sort(unique(dimValues));
+            for j = 1:numel(thresholds)
+               
+                if j < numel(thresholds)
+                    thresh = (double(thresholds(j)) + double(thresholds(j+1)))/2;
+                else
+                    thresh = thresholds(j);
+                end
+                
+                left.X = S.X(S.X(:,i) <= thresh,:);
+                right.X = S.X(S.X(:,i) > thresh,:);
+                
+                left.y = S.y(S.X(:,i) <= thresh,:);
+                right.y = S.y(S.X(:,i) > thresh,:);
+                
+                left.labelMap = S.labelMap;
+                right.labelMap = S.labelMap;
+                
+                leftSize = double(size(left.X));
+                rightSize = double(size(right.X));
+                
+                Delta = im - impurity(left)*leftSize(1)/featureSize(1) - impurity(right)*rightSize(1)/featureSize(1);
+                Delta = fix(Delta, S, left, right);
+                
+                if Delta > DeltaOpt
+                    DeltaOpt = Delta;
+                    LOpt = left;
+                    ROpt = right;
+                    dOpt = i;
+                    tOpt = thresholds(j);
+                end
+            end
+        end
+        
+
         end
     end
 %%
     function p = distribution(S)
         p = double(zeros(numel(S.labelMap)));
         for i = 1:numel(S.labelMap)
-            p(i) = sum(S.y == S.labelMap(i, 1)); 
+            p(i) = sum(S.y == S.labelMap(i)); 
         end
         p = p/numel(S.y);
     end
@@ -60,7 +101,42 @@ end
         i = clip(i);
     end
 
-    % Any other helper functions you may need go here
+%%
+    function [LOpt, ROpt, dOpt, tOpt] = findSplitR(S)
+        DeltaOpt = -1;
+        im = impurity(S);
+        featureSize = double(size(S.X));
+        numDims = featureSize(2);
+        dim = randi(numDims);
+        
+        dimValues = S.X(:,dim);
+        thresholds = unique(dimValues);
+        for j = 1:numel(thresholds)
+            left.X = S.X(S.X(:,dim) <= thresholds(j),:);
+            right.X = S.X(S.X(:,dim) > thresholds(j),:);
+            
+            left.y = S.y(S.X(:,dim) <= thresholds(j),:);
+            right.y = S.y(S.X(:,dim) > thresholds(j),:);
+            
+            left.labelMap = S.labelMap;
+            right.labelMap = S.labelMap;
+            
+            leftSize = double(size(left.X));
+            rightSize = double(size(right.X));
+            
+            Delta = im - impurity(left)*leftSize(1)/featureSize(1) - impurity(right)*rightSize(1)/featureSize(1);
+            Delta = fix(Delta, S, left, right);
+            
+            if Delta > DeltaOpt
+                DeltaOpt = Delta;
+                LOpt = left;
+                ROpt = right;
+                dOpt = dim;
+                tOpt = thresholds(j);
+            end
+        end
+    end
+
 %%
     % Do not change the code in the functions count, clip and fix below
     function c = count(S)

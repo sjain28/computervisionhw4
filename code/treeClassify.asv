@@ -1,0 +1,3 @@
+function y = treeClassify(x, tau)
+while ~isEmpty(tau.d
+end
