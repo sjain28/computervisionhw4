@@ -1,11 +1,11 @@
 function y = forestClassify(x, phi)
-    p = [];
-    t = tau.L;
-    while(~isempty(tau.d))
+
+    t = phi{1};
+    while(~isempty(t.d))
         t = t.L;
     end
-    % is this the correct dimension to take for num of classes?
-    K = numel(t.p(:,1));
+ 
+    K = numel(t.p);
     
     v = zeros(K);
     for i = 1:numel(phi)
@@ -14,7 +14,7 @@ function y = forestClassify(x, phi)
        v(y) = v(y) + 1;
     end
     
-    [argval, y] = max(v);
+    [~, y] = max(v);
 
 end
 

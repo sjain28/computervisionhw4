@@ -1,6 +1,6 @@
 function y = treeClassify(x, tau)
 
-while ~isEmpty(tau.d)
+while ~isempty(tau.d)
     val = x(tau.d);
     if val <= tau.t
         tau = tau.L;
