@@ -24,8 +24,16 @@ tau.p = [];
 
 if OkToSplit(S, depth)
     [Ltemp, Rtemp, tau.d, tau.t] = findSplit(S);
-    tau.L = trainTree(Ltemp, depth+1, random, dMax, sMin);
-    tau.R = trainTree(Rtemp, depth+1, random, dMax, sMin);
+    
+    %Handling edge case where splitting is not possible,
+    %but OkToSplit returns true
+    if numel(Rtemp.y) == 0
+        tau.p = distribution(S);        
+    else
+    	tau.L = trainTree(Ltemp, depth+1, random, dMax, sMin);
+        tau.R = trainTree(Rtemp, depth+1, random, dMax, sMin);
+    end
+
 else
     tau.p = distribution(S);
 end
@@ -43,9 +51,7 @@ end
         im = impurity(S);
         featureSize = double(size(S.X));
         numDims = featureSize(2);
-        
-        %TODO: Deal with case where splitting is impossible but OkToSplit
-        %returns true
+
         for i = 1:numDims
             dimValues = S.X(:,i);
             thresholds = sort(unique(dimValues));
