@@ -1,0 +1,17 @@
+function e = oobErr(phi, T, used)
+    numSamples = numel(T.y);
+    for i = 1:numSamples
+        sample = T.X(i,:);
+        oobTrees = phi{~used()};
+    end
+end
+
+
+
+
+
+for each x in T
+    select trees in PHI that did not use x
+     for each tree
+          treeClassify(x)
+     aggregate votes and determine if error or not
