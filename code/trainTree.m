@@ -116,13 +116,20 @@ end
         dim = randi(numDims);
         
         dimValues = S.X(:,dim);
-        thresholds = unique(dimValues);
+        thresholds = sort(unique(dimValues));
         for j = 1:numel(thresholds)
-            left.X = S.X(S.X(:,dim) <= thresholds(j),:);
-            right.X = S.X(S.X(:,dim) > thresholds(j),:);
             
-            left.y = S.y(S.X(:,dim) <= thresholds(j),:);
-            right.y = S.y(S.X(:,dim) > thresholds(j),:);
+                if j < numel(thresholds)
+                    thresh = (double(thresholds(j)) + double(thresholds(j+1)))/2;
+                else
+                    thresh = thresholds(j);
+                end
+            
+            left.X = S.X(S.X(:,dim) <= thresh,:);
+            right.X = S.X(S.X(:,dim) > thresh,:);
+            
+            left.y = S.y(S.X(:,dim) <= thresh,:);
+            right.y = S.y(S.X(:,dim) > thresh,:);
             
             left.labelMap = S.labelMap;
             right.labelMap = S.labelMap;
