@@ -1,4 +1,4 @@
-function e = oobErr(phi, T, used)
+function e = oobError(phi, T, used)
     numSamples = double(numel(T.y));
     err = double(0);
     for i = 1:numSamples
