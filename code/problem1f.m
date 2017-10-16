@@ -7,3 +7,5 @@ for i = 1:20
 end
 
 [minError, depth] = min(errors)
+
+plot(errors)

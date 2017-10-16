@@ -58,7 +58,8 @@ end
             for j = 1:numel(thresholds)
                
                 if j < numel(thresholds)
-                    thresh = (double(thresholds(j)) + double(thresholds(j+1)))/2;
+                    thresh = (double(thresholds(j)) ...
+                        + double(thresholds(j+1)))/2;
                 else
                     thresh = thresholds(j);
                 end
@@ -75,7 +76,8 @@ end
                 leftSize = double(size(left.X));
                 rightSize = double(size(right.X));
                 
-                Delta = im - impurity(left)*leftSize(1)/featureSize(1) - impurity(right)*rightSize(1)/featureSize(1);
+                Delta = im - impurity(left)*leftSize(1)/featureSize(1) ...
+                    - impurity(right)*rightSize(1)/featureSize(1);
                 Delta = fix(Delta, S, left, right);
                 
                 if Delta > DeltaOpt
@@ -120,7 +122,8 @@ end
         for j = 1:numel(thresholds)
             
                 if j < numel(thresholds)
-                    thresh = (double(thresholds(j)) + double(thresholds(j+1)))/2;
+                    thresh = (double(thresholds(j)) ...
+                        + double(thresholds(j+1)))/2;
                 else
                     thresh = thresholds(j);
                 end
@@ -137,7 +140,8 @@ end
             leftSize = double(size(left.X));
             rightSize = double(size(right.X));
             
-            Delta = im - impurity(left)*leftSize(1)/featureSize(1) - impurity(right)*rightSize(1)/featureSize(1);
+            Delta = im - impurity(left)*leftSize(1)/featureSize(1) ...
+                - impurity(right)*rightSize(1)/featureSize(1);
             Delta = fix(Delta, S, left, right);
             
             if Delta > DeltaOpt
